@@ -2,8 +2,9 @@ import discord
 
 from lib.utils import embed_gen
 
-def register_me(tree, client, uid_to_courses):
-    @tree.command(name="me", description="View your courses", guild=discord.Object(1095372141966393364))
+def register_me(tree, client, uid_to_courses, gu):
+    
+    @tree.command(name="me", description="View your courses")
     async def slash_03(intr01: discord.Interaction):
         userid = intr01.user.id
         rrr=""

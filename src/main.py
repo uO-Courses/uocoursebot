@@ -22,7 +22,7 @@ from discord.ui import Select, View
 
 from cmds import register
 
-# a course section ID should be like FRA1528-A
+# a course section ID should be like FRA1528-A-FALL
 uid_to_courses = {
      
 }
@@ -30,19 +30,15 @@ uid_to_courses = {
 with open("utc.json", 'r') as f:
     uid_to_courses = json.loads(f.read())
 
-# uid -> course code
-AW_MSG_FRM = {
-    
-}
-
-
-
-
-
-
 class Uocourse(discord.Client):
     async def on_ready(self):
-        await tree.sync(guild=discord.Object(1095372141966393364))
+        with open("guilds.json", 'r') as f:
+            g = json.loads(f.read())
+
+        tree.copy_global_to(guild=discord.Object(g[0]))
+
+        await tree.sync()
+
         print('Logged in as', self.user)
 
     async def on_message(self, message):
@@ -55,6 +51,5 @@ client = Uocourse(intents=intents)
 tree = discord.app_commands.CommandTree(client)
 
 register(tree, client, uid_to_courses)
-
 
 client.run(os.environ.get("UOCBOT"))

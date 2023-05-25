@@ -2,8 +2,9 @@ import discord
 
 from lib.utils import parse_command, dayd, sttt, year, embed_gen
 
-def register_find(tree, client, uid_to_courses):
-    @tree.command(name="find", description="Find a course", guild=discord.Object(1095372141966393364))
+def register_find(tree: discord.app_commands.CommandTree, client, uid_to_courses, gu):
+    
+    @tree.command(name="find", description="Find a course")
     async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fall"):
         userid = intr01.user.id
         msgtx = f"{term.lower()} {course_code.replace(' ', '')}"
