@@ -1,7 +1,7 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import parse_command, dayd, sttt, pat, embed_gen
+from lib.utils import parse_command, dayd, sttt, pat, embed_gen, pretty_print_user
 
 def register_buddy(tree, client, uid_to_courses, gu):
     @tree.command(name="buddy", description="Find people in the same sections as you")
@@ -27,8 +27,7 @@ def register_buddy(tree, client, uid_to_courses, gu):
 
         for k, v in u_to_buddy.items():
             if len(v) >= minimum:
-                u = await client.fetch_user(k)
-                emb.add_field(name=u.name, value="\n".join(v))
+                emb.add_field(name=await pretty_print_user(client, k), value="\n".join(v))
 
                 if i >= 24:
                     i = 0

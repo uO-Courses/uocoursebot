@@ -54,3 +54,7 @@ def embed_gen(*args, **kwargs):
     emb =  discord.Embed(*args, **kwargs)
     emb.set_footer(text="Copyright © Ann Mauduy-Decius")
     return emb
+
+async def pretty_print_user(client, uid):
+    u = await client.fetch_user(uid)
+    return f"{u.name}#{u.discriminator}"
