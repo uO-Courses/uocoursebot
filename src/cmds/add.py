@@ -1,7 +1,7 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import parse_command, dayd, sttt, pat
+from lib.utils import parse_command, dayd, sttt, pat, year, embed_gen
 
 def register_add(tree, client, uid_to_courses):
     @tree.command(name="add", description="Add a course", guild=discord.Object(1095372141966393364))
@@ -33,7 +33,7 @@ def register_add(tree, client, uid_to_courses):
                 await intr01.channel.send(spmsg)
 
             
-            emb = discord.Embed(title="Please choose which section you are enrolled in.", color=33023)
+            emb = embed_gen(title="Please choose which section you are enrolled in.", color = 10181046)
             ornth = lambda x: ["Unknown"] if x == [] else x
             i = 0
             n = 1

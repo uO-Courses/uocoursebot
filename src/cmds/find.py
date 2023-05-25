@@ -1,6 +1,6 @@
 import discord
 
-from lib.utils import parse_command, dayd, sttt
+from lib.utils import parse_command, dayd, sttt, year, embed_gen
 
 def register_find(tree, client, uid_to_courses):
     @tree.command(name="find", description="Find a course", guild=discord.Object(1095372141966393364))
@@ -29,7 +29,7 @@ def register_find(tree, client, uid_to_courses):
             if spmsg != "":
                 await intr01.channel.send(spmsg)
 
-            emb = discord.Embed(title=f"{ ans['course_name'] } ({ans['subject_code']}{ans['course_code']})", color=33023)
+            emb = embed_gen(title=f"{ ans['course_name'] } ({ans['subject_code']}{ans['course_code']})", color = 10181046)
 
             for k, section in ans["sections"].items():
                 tt = f"Section {k}"

@@ -1,14 +1,14 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import parse_command, dayd, sttt
+from lib.utils import parse_command, dayd, sttt, embed_gen
 
 def register_remove(tree, client, uid_to_courses):
     @tree.command(name="remove", description="Remove a course", guild=discord.Object(1095372141966393364))
     async def slash_04(intr01: discord.Interaction):
         userid = intr01.user.id
         await intr01.response.defer(thinking=True)
-        emb = discord.Embed(title="Choose which section to remove.")
+        emb = embed_gen(title="Choose which section to remove.", color = 10181046)
 
         ss = []
         for k, v in uid_to_courses.items():

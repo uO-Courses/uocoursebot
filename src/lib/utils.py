@@ -1,4 +1,4 @@
-import requests, json, os, re
+import requests, json, os, re, discord
 
 dayd = {
     "MO": "Monday",
@@ -49,3 +49,8 @@ def parse_command(text: str):
 
         
     return get_course(session=sess, subject=ans[0], course_code=ans[1]), b
+
+def embed_gen(*args, **kwargs):
+    emb =  discord.Embed(*args, **kwargs)
+    emb.set_footer(text="Copyright © Ann Mauduy-Decius")
+    return emb

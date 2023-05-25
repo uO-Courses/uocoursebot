@@ -1,4 +1,4 @@
-from . import add, find, me, who, remove
+from . import add, find, me, who, remove, buddy
 
 def register(tree, bot, utc):
     add.register_add(tree, bot, utc)
@@ -6,3 +6,4 @@ def register(tree, bot, utc):
     me.register_me(tree, bot, utc)
     who.register_who(tree, bot, utc)
     remove.register_remove(tree, bot, utc)
+    buddy.register_buddy(tree, bot, utc)

@@ -1,12 +1,14 @@
 import discord
 
+from lib.utils import embed_gen
+
 def register_who(tree, client, uid_to_courses):
     @tree.command(name="who", description="View who is enrolled in a class", guild=discord.Object(1095372141966393364))
     async def slash_03(intr01: discord.Interaction, course_code: str):
         i = 0
         cc = course_code.replace(" ", "").upper()
         await intr01.response.defer(thinking=True)
-        emb = discord.Embed(title=f"People enrolled in {cc}")
+        emb = embed_gen(title=f"People enrolled in {cc}", color = 10181046)
         for k, v in uid_to_courses.items():
             if cc in k:
                 r = []
