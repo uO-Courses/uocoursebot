@@ -2,8 +2,9 @@ import discord
 
 from lib.utils import embed_gen
 
-def register_who(tree, client, uid_to_courses):
-    @tree.command(name="who", description="View who is enrolled in a class", guild=discord.Object(1095372141966393364))
+def register_who(tree, client, uid_to_courses, gu):
+    
+    @tree.command(name="who", description="View who is enrolled in a class")
     async def slash_03(intr01: discord.Interaction, course_code: str):
         i = 0
         cc = course_code.replace(" ", "").upper()
