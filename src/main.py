@@ -105,6 +105,7 @@ async def slash_03(intr01: discord.Interaction):
     userid = intr01.user.id
     rrr=""
     await intr01.response.defer(thinking=True)
+    emb = discord.Embed(title="Your courses.")
     for k, v in uid_to_courses.items():
         if userid in v:
             r = []
@@ -112,10 +113,31 @@ async def slash_03(intr01: discord.Interaction):
                 ue = await client.fetch_user(u)
                 r.append(ue.name)
 
-            rr = ', '.join(r)
-            rrr += (f"You have selected the section {k}. The following people are in this section: {rr}.\n")
+            rr = '\n'.join(r)
+            emb.add_field(name=k, value=rr)
         
-    await intr01.followup.send(rrr)
+    await intr01.followup.send(embed=emb)
+
+@tree.command(name="who", description="View who is enrolled in a class", guild=discord.Object(1095372141966393364))
+async def slash_03(intr01: discord.Interaction, course_code: str):
+    i = 0
+    cc = course_code.replace(" ", "").upper()
+    await intr01.response.defer(thinking=True)
+    emb = discord.Embed(title=f"People enrolled in {cc}")
+    for k, v in uid_to_courses.items():
+        if cc in k:
+            r = []
+            for u in v:
+                ue = await client.fetch_user(u)
+                r.append(ue.name)
+
+            rr = '\n'.join(r)
+            emb.add_field(name=k, value=rr)
+
+    await intr01.followup.send(embed=emb)
+
+
+
 
 @tree.command(name="find", description="Find a course", guild=discord.Object(1095372141966393364))
 async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fall"):
@@ -163,7 +185,7 @@ async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fal
                     """
                 )
             emb.add_field(name=f"{tt} ({', '.join(profs)})", value="".join(tv), inline=False)
-        await intr01.followup.send(embed=emb)
+        await intr01.followup.send(ephemeral=True, embed=emb)
     else:
         await intr01.channel.send(f"Could not find specified course ({msgtx.replace('winter ', '').replace('fall ', '').upper()})")
 
@@ -312,10 +334,10 @@ async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fal
                                 r.append(ue.name)
 
                             rr = '\n'.join(r)
-                            await intr.response.send_message(f"Succesfully added {tname.upper()}. The following people are in this section: \n{rr}.")
+                            await intr.response.send_message(f"Succesfully added {tname.upper()}. The following people are in this section: \n{rr}.", ephemeral=True)
                     else:
                         uid_to_courses[tname] = [userid]
-                        await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.")
+                        await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.", ephemeral=True)
                     with open("utc.json", 'w') as f:
                         f.write(json.dumps(uid_to_courses, indent=4))
             return just_some_callback
@@ -328,6 +350,6 @@ async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fal
             el.callback = get_just_some_callback(el)
             view.add_item(el)
 
-        await intr01.followup.send(embed=emb, view=view)
+        await intr01.followup.send(ephemeral=True, embed=emb, view=view)
 
 client.run(os.environ.get("UOCBOT"))
