@@ -1,8 +1,9 @@
 import discord
 
-from lib.utils import parse_command, dayd, sttt, year, embed_gen
+from lib.utils import parse_command, dayd, sttt, year, embed_gen, Pagination
 
-def register_find(tree: discord.app_commands.CommandTree, client, uid_to_courses, gu):
+
+def register_find(tree: discord.app_commands.CommandTree, client: discord.Client, uid_to_courses, gu):
     
     @tree.command(name="find", description="Find a course")
     async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fall"):
@@ -31,8 +32,17 @@ def register_find(tree: discord.app_commands.CommandTree, client, uid_to_courses
                 await intr01.channel.send(spmsg)
 
             emb = embed_gen(title=f"{ ans['course_name'] } ({ans['subject_code']}{ans['course_code']})", color = 10181046)
+            
+            q = False
+
+            truncated = ""
+            
+            ttl = 0
+
+            tttv = []
 
             for k, section in ans["sections"].items():
+            
                 tt = f"Section {k}"
                 tv = []
                 profs = []
@@ -46,10 +56,43 @@ def register_find(tree: discord.app_commands.CommandTree, client, uid_to_courses
                         st = "⚠️"
                     tv.append(
                         f"""
-                            {st} {kc} {dayd[comp['day']]} {comp['start_time_12hr']} - {comp['end_time_12hr']}
+{st} {kc} {dayd[comp['day']]} {comp['start_time_12hr']} - {comp['end_time_12hr']}
                         """
                     )
-                emb.add_field(name=f"{tt} ({', '.join(profs)})", value="".join(tv), inline=False)
-            await intr01.followup.send(ephemeral=True, embed=emb)
+
+                ms  = "\n".join(tv)
+
+
+
+
+                ttl+=len(ms)
+                
+
+                emb.add_field(name=f"{tt} ({', '.join(profs)})", value=ms, inline=False)
+
+                x=800
+                res=[ms[y-x:y] for y in range(x, len(ms)+x,x)]
+
+                tttv.extend(res)
+
+            if ttl>4000:
+
+                per_page = 3
+                lst = tttv
+                async def get_page(page: int):
+                    emb = embed_gen(title=f"{ ans['course_name'] } ({ans['subject_code']}{ans['course_code']})", color = 10181046)
+                    emb.description = ""
+                    offset = (page-1) * per_page
+                    for el in lst[offset:offset+per_page]:
+                        emb.description += f"{el}\n"
+                    n = Pagination.compute_total_pages(len(lst), per_page)
+                    emb.set_footer(text=f"Page {page} of {n}")
+                    return emb, n
+                
+                await Pagination(intr01, get_page).navigate()
+
+
+            else:
+                await intr01.followup.send(embed=emb)
         else:
             await intr01.channel.send(f"Could not find specified course ({msgtx.replace('winter ', '').replace('fall ', '').upper()})")
