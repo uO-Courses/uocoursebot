@@ -168,18 +168,46 @@ async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fal
         await intr01.channel.send(f"Could not find specified course ({msgtx.replace('winter ', '').replace('fall ', '').upper()})")
 
 @tree.command(name="remove", description="Remove a course", guild=discord.Object(1095372141966393364))
-async def slash_04(intr01: discord.Interaction, course_code: str, section_letter: str):
+async def slash_04(intr01: discord.Interaction):
     userid = intr01.user.id
     await intr01.response.defer(thinking=True)
-    tname = f"{course_code.replace(' ', '').upper()}-{section_letter}"
-    v = uid_to_courses[tname]
-    if userid in v:
-        v.remove(userid)
-    
-    with open("utc.json", 'w') as f:
-        f.write(json.dumps(uid_to_courses, indent=4))
+    emb = discord.Embed(title="Choose which section to remove.")
 
-    await intr01.followup.send(f"Succesfully removed section {tname}.")
+    ss = []
+    for k, v in uid_to_courses.items():
+        if userid in v:
+            ss.append(k)
+
+    emb.add_field(name="Currently selected courses", value="\n".join(ss))
+
+    sel = Select(
+        placeholder="Choose the section to remove",
+        options=[
+            discord.SelectOption(label=k) for k in ss
+        ]
+    )
+
+    async def selection_callback(intr01: discord.Interaction):
+        if intr01.user.id == userid:
+            await intr01.response.defer()
+            val = sel.values[0]
+            
+            v = uid_to_courses[val]
+            if userid in v:
+                v.remove(userid)
+            with open("utc.json", 'w') as f:
+                f.write(json.dumps(uid_to_courses, indent=4))
+
+            await intr01.followup.send(f"Sucessfully deleted {val}.")
+            
+
+    sel.callback = selection_callback
+    view = View()
+    view.add_item(sel)
+    
+   
+
+    await intr01.followup.send(embed=emb, view=view)
 
 @tree.command(name="add", description="Add a course", guild=discord.Object(1095372141966393364))
 async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fall"):
@@ -187,7 +215,7 @@ async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fal
     msgtx = f"{term.lower()} {course_code.replace(' ', '')}"
     ans, b = parse_command(msgtx)
     spmsg = ""
-    ff = "Fall"
+    ff = term
 
     await intr01.response.defer(thinking=True)
     if ans == None and b:
@@ -195,9 +223,11 @@ async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fal
         ans, _ = parse_command(f'winter {msgtx}')
     if ans == None:
         if "winter" in msgtx:
+            ff = "fall"
             ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
             spmsg = "Course not found for Winter term but found for Fall term."
         else:
+            ff = "winter"
             ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
             spmsg = "Course not found for Fall term but found for Winter term."
     if ans != None:
@@ -270,7 +300,7 @@ async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fal
                     sl = obj.values[0]
 
                     sec = sl.upper().replace("SECTION", "").replace(" ", "")
-                    tname = f"{ccode.upper()}-{sec}"
+                    tname = f"{ccode.upper()}-{sec}-{ff.upper()}"
                     if tname in uid_to_courses:
                         if userid in uid_to_courses[tname]:
                             await intr.response.send_message("You have already added this section.")
