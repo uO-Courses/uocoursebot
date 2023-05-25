@@ -1,7 +1,7 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import parse_command, dayd, sttt
+from lib.utils import parse_command, dayd, sttt, pat
 
 def register_add(tree, client, uid_to_courses):
     @tree.command(name="add", description="Add a course", guild=discord.Object(1095372141966393364))
@@ -123,4 +123,4 @@ def register_add(tree, client, uid_to_courses):
                 el.callback = get_just_some_callback(el)
                 view.add_item(el)
 
-            await intr01.followup.send(ephemeral=True, embed=emb, view=view)
+            await intr01.followup.send(embed=emb, view=view, ephemeral=True)
