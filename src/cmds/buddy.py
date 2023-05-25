@@ -28,7 +28,7 @@ def register_buddy(tree, client, uid_to_courses, gu):
         for k, v in u_to_buddy.items():
             if len(v) >= minimum:
                 u = await client.fetch_user(k)
-                emb.add_field(name=u.name, value="\n".join(v))
+                emb.add_field(name=f"{u.name}#{u.discriminator}", value="\n".join(v))
 
                 if i >= 24:
                     i = 0

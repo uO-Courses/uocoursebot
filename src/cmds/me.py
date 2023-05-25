@@ -15,7 +15,7 @@ def register_me(tree, client, uid_to_courses, gu):
                 r = []
                 for u in v:
                     ue = await client.fetch_user(u)
-                    r.append(ue.name)
+                    r.append(f"{ue.name}#{ue.discriminator}")
 
                 rr = '\n'.join(r)
                 emb.add_field(name=k, value=rr)
