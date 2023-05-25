@@ -18,6 +18,20 @@
 
 import requests, json, os, re
 import discord
+from discord.ui import Select, View
+
+# a course section ID should be like FRA1528-A
+uid_to_courses = {
+     
+}
+
+with open("utc.json", 'r') as f:
+    uid_to_courses = json.loads(f.read())
+
+# uid -> course code
+AW_MSG_FRM = {
+    
+}
 
 dayd = {
     "MO": "Monday",
@@ -37,7 +51,7 @@ sttt = {
 year = 2023
 
 
-pat = re.compile(r"(.{3})(\d{4})")
+pat = re.compile(r"(.{3})(\d{4}\d?)")
 
 def get_course(session: str, subject: str, course_code: int, year: int=year):
     resp = requests.get(
@@ -67,12 +81,15 @@ def parse_command(text: str):
     return get_course(session=sess, subject=ans[0], course_code=ans[1]), b
 
 
+
+
 class Uocourse(discord.Client):
     async def on_ready(self):
-        print('Logged on as', self.user)
+        await tree.sync(guild=discord.Object(1095372141966393364))
+        print('Logged in as', self.user)
 
     async def on_message(self, message):
-        # don't respond to ourselves
+            
         if message.content.lower().startswith("uo!find"):
             msgtx = message.content.replace("uo!find ", "").lower()
             ans, b = parse_command(msgtx)
@@ -123,4 +140,206 @@ class Uocourse(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = Uocourse(intents=intents)
+tree = discord.app_commands.CommandTree(client)
+
+@tree.command(name="me", description="View your courses", guild=discord.Object(1095372141966393364))
+async def slash_03(intr01: discord.Interaction):
+    userid = intr01.user.id
+    rrr=""
+    await intr01.response.defer(thinking=True)
+    for k, v in uid_to_courses.items():
+        if userid in v:
+            r = []
+            for u in v:
+                ue = await client.fetch_user(u)
+                r.append(ue.name)
+
+            rr = ', '.join(r)
+            rrr += (f"You have selected the section {k}. The following people are in this section: {rr}.\n")
+        
+    await intr01.followup.send(rrr)
+
+@tree.command(name="find", description="Find a course", guild=discord.Object(1095372141966393364))
+async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fall"):
+    userid = intr01.user.id
+    msgtx = f"{term} {course_code.replace(' ', '')}"
+    ans, b = parse_command(msgtx)
+    spmsg = ""
+    ff = "Fall"
+
+    await intr01.response.defer(thinking=True)
+    if ans == None and b:
+        ff = "Winter"
+        ans, _ = parse_command(f'winter {msgtx}')
+    else:
+        if "winter" in msgtx:
+            ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
+            spmsg = "Course not found for Winter term but found for Fall term."
+        else:
+            ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
+            spmsg = "Course not found for Fall term but found for Winter term."
+    if ans != None:
+        if b:
+            await intr01.channel.send(f"No term specified, defaulting to {ff} {year}.")
+            
+        if spmsg != "":
+            await intr01.channel.send(spmsg)
+
+        emb = discord.Embed(title=f"{ ans['course_name'] } ({ans['subject_code']}{ans['course_code']})", color=33023)
+
+        for k, section in ans["sections"].items():
+            tt = f"Section {k}"
+            tv = []
+            profs = []
+            for kc, comp in section["components"].items():
+                prof = comp["instructor"]
+                if prof not in profs:
+                    profs.append(prof)
+                if comp["status"] in sttt.keys():
+                    st = sttt[comp["status"]]
+                else: 
+                    st = "⚠️"
+                tv.append(
+                    f"""
+                        {st} {kc} {dayd[comp['day']]} {comp['start_time_12hr']} - {comp['end_time_12hr']}
+                    """
+                )
+            emb.add_field(name=f"{tt} ({', '.join(profs)})", value="".join(tv), inline=False)
+        await intr01.followup.send(embed=emb)
+    else:
+        await intr01.channel.send(f"Could not find specified course ({msgtx.replace('winter ', '').replace('fall ', '').upper()})")
+
+@tree.command(name="remove", description="Remove a course", guild=discord.Object(1095372141966393364))
+async def slash_04(intr01: discord.Interaction, course_code: str, section_letter: str):
+    userid = intr01.user.id
+    await intr01.response.defer(thinking=True)
+    tname = f"{course_code.replace(' ', '').upper()}-{section_letter}"
+    v = uid_to_courses[tname]
+    if userid in v:
+        v.remove(userid)
+    
+    with open("utc.json", 'w') as f:
+        f.write(json.dumps(uid_to_courses, indent=4))
+
+    await intr01.followup.send(f"Succesfully removed section {tname}.")
+
+@tree.command(name="add", description="Add a course", guild=discord.Object(1095372141966393364))
+async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fall"):
+    userid = intr01.user.id
+    msgtx = f"{term} {course_code.replace(' ', '')}"
+    ans, b = parse_command(msgtx)
+    spmsg = ""
+    ff = "Fall"
+
+    await intr01.response.defer(thinking=True)
+    if ans == None and b:
+        ff = "Winter"
+        ans, _ = parse_command(f'winter {msgtx}')
+    else:
+        if "winter" in msgtx:
+            ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
+            spmsg = "Course not found for Winter term but found for Fall term."
+        else:
+            ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
+            spmsg = "Course not found for Fall term but found for Winter term."
+    if ans != None:
+        if b:
+            await intr01.channel.send(f"No term specified, defaulting to {ff} {year}.")
+
+        if spmsg != "":
+            await intr01.channel.send(spmsg)
+
+        
+        emb = discord.Embed(title="Please choose which section you are enrolled in.", color=33023)
+        ornth = lambda x: ["Unknown"] if x == [] else x
+        i = 0
+        n = 1
+        l = [f"Section {k} ({', '.join(ornth(list(set([c['instructor'] for (_, c) in v['components'].items()]))))})" for (k, v) in ans["sections"].items()]
+        ss = ""
+        for el in l:
+            if i > 9:
+                i = 0
+                emb.add_field(name=f"Available sections ({n})", value=ss)
+                n+=1
+                ss = ""
+            ss+=el+"\n"
+
+            i+=1
+
+        emb.add_field(name=f"Available sections ({n})", value=ss)
+        sls = []
+        select = None
+        if len(ans["sections"].keys()) < 25:
+            select = Select(
+                placeholder="Choose your section",
+                options=[
+                    discord.SelectOption(
+                        label=f"Section {secc}",
+                    ) for secc in ans["sections"].keys()
+                ]
+            )
+
+            sls.append(select)
+        else:
+            up = []
+            sls = []
+            i = 0
+            n = 0
+            for el in ans["sections"].keys():
+                if i >= 24:
+                    sls.append(Select(
+                        placeholder=f"Choose your section ({n})",
+                        options=up
+                    ))
+                    up = []
+                    i = 0
+                    n += 1
+
+                up.append(discord.SelectOption(label=f"Section {el}"))
+
+                i+=1
+
+            sls.append(Select(
+                            placeholder=f"Choose your section ({n})",
+                            options=up
+                        ))
+
+        ccode = "".join(pat.findall(msgtx)[0])
+        def get_just_some_callback(obj):
+            async def just_some_callback(intr):
+
+                if intr.user.id == userid:
+                    sl = obj.values[0]
+
+                    sec = sl.upper().replace("SECTION", "").replace(" ", "")
+                    tname = f"{ccode.upper()}-{sec}"
+                    if tname in uid_to_courses:
+                        if userid in uid_to_courses[tname]:
+                            await intr.response.send_message("You have already added this section.")
+                        else:
+                            uid_to_courses[tname].append(userid)
+                            r = []
+                            for u in uid_to_courses[tname]:
+                                ue = await client.fetch_user(u)
+                                r.append(ue.name)
+
+                            rr = '\n'.join(r)
+                            await intr.response.send_message(f"Succesfully added {tname.upper()}. The following people are in this section: \n{rr}.")
+                    else:
+                        uid_to_courses[tname] = [userid]
+                        await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.")
+                    with open("utc.json", 'w') as f:
+                        f.write(json.dumps(uid_to_courses, indent=4))
+            return just_some_callback
+        
+        view = View()
+
+        if select is not None:
+            select.callback = get_just_some_callback(select)
+        for el in sls:
+            el.callback = get_just_some_callback(el)
+            view.add_item(el)
+
+        await intr01.followup.send(embed=emb, view=view)
+
 client.run(os.environ.get("UOCBOT"))
