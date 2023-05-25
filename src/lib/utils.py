@@ -52,5 +52,5 @@ def parse_command(text: str):
 
 def embed_gen(*args, **kwargs):
     emb =  discord.Embed(*args, **kwargs)
-    emb.set_footer(text="Copyright © Ann Mauduy-Decius")
+    emb.set_footer(text="**Copyright © Ann Mauduy-Decius**")
     return emb

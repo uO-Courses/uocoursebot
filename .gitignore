@@ -1,2 +1,3 @@
 venv/*
+.ssh/*
 **/__pycache__/*
