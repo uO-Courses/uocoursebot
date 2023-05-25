@@ -1,0 +1,20 @@
+import discord
+
+def register_who(tree, client, uid_to_courses):
+    @tree.command(name="who", description="View who is enrolled in a class", guild=discord.Object(1095372141966393364))
+    async def slash_03(intr01: discord.Interaction, course_code: str):
+        i = 0
+        cc = course_code.replace(" ", "").upper()
+        await intr01.response.defer(thinking=True)
+        emb = discord.Embed(title=f"People enrolled in {cc}")
+        for k, v in uid_to_courses.items():
+            if cc in k:
+                r = []
+                for u in v:
+                    ue = await client.fetch_user(u)
+                    r.append(ue.name)
+
+                rr = '\n'.join(r)
+                emb.add_field(name=k, value=rr)
+
+        await intr01.followup.send(embed=emb)
