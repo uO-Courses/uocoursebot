@@ -123,4 +123,4 @@ def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses,
                 el.callback = get_just_some_callback(el)
                 view.add_item(el)
 
-            await intr01.followup.send(embed=emb, view=view, ephemeral=True)
+            await intr01.followup.send(view=view, ephemeral=True)
