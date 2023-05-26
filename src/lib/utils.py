@@ -122,7 +122,7 @@ def check_if_exists(course_code):
     subject_code = course_code[0:3]
     course_number = course_code[3:]
     p = requests.get(f"https://catalogue.uottawa.ca/en/courses/{subject_code.lower()}/")
-    return f"{subject_code.upper()} {course_number}" in p.text
+    return (f"{subject_code.upper()} {course_number}" in p.text or f"{subject_code.upper()} {course_number}" in p.text)
 
 cache = {}
 
