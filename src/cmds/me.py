@@ -4,7 +4,7 @@ from lib.utils import embed_gen, pretty_print_user
 
 def register_me(tree, client, uid_to_courses, gu):
     
-    @tree.command(name="me", description="View your courses")
+    @tree.command(name="profile", description="View your courses")
     async def slash_03(intr01: discord.Interaction):
         userid = intr01.user.id
         await intr01.response.defer(thinking=True)
