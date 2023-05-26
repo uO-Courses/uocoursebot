@@ -1,7 +1,6 @@
 import requests, json, os, re, discord
 from typing import Callable, Optional
 
-
 class Pagination(discord.ui.View):
     def __init__(self, interaction: discord.Interaction, get_page: Callable):
         self.interaction = interaction
@@ -177,8 +176,6 @@ def get_class(code, term): #/ -> (dict, msg, bool)
                 scode: res
             }
 
-    print(cache)
-
     return res
 
 def embed_gen(*args, **kwargs):
@@ -187,5 +184,4 @@ def embed_gen(*args, **kwargs):
     return emb
 
 async def pretty_print_user(client, uid):
-    u = await client.fetch_user(uid)
-    return f"{u.name}#{u.discriminator}"
+    return f"<@{uid}>"
