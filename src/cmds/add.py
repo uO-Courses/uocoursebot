@@ -3,53 +3,39 @@ from discord.ui import Select, View
 
 from lib.utils import parse_command, dayd, sttt, pat, year, embed_gen
 
+def get_class(code, term): #/ -> (dict, msg, bool)
+    fxcode = code.replace(' ', '').upper()
+    ff = term.replace(' ', '').lower()
+    msgtx = f"{ff} {fxcode}"
+    ans, _ = parse_command(msgtx)
+    spmsg = ""
+    wrk = True
+
+    if ans == None:
+        if "winter" in msgtx:
+            ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
+            spmsg = "Course not found for Winter term but found for Fall term."
+        else:
+            ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
+            spmsg = "Course not found for Fall term but found for Winter term."
+    
+    if ans == None:
+        spmsg = f"Course not found ({fxcode})"
+        wrk = False
+
+    return ans, spmsg, wrk, msgtx, ff.upper()
+
 def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses, gu):
     @tree.command(name="add", description="Add a course")
     async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fall"):
         userid = intr01.user.id
-        msgtx = f"{term.lower()} {course_code.replace(' ', '')}"
-        ans, b = parse_command(msgtx)
-        spmsg = ""
-        ff = term
 
         await intr01.response.defer(thinking=True)
-        if ans == None and b:
-            ff = "Winter"
-            ans, _ = parse_command(f'winter {msgtx}')
-        if ans == None:
-            if "winter" in msgtx:
-                ff = "fall"
-                ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
-                spmsg = "Course not found for Winter term but found for Fall term."
-            else:
-                ff = "winter"
-                ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
-                spmsg = "Course not found for Fall term but found for Winter term."
-        if ans != None:
-            if b:
-                await intr01.channel.send(f"No term specified, defaulting to {ff} {year}.")
+        ans, spmsg, worked, msgtx, ff = get_class(course_code, term)
 
+        if worked:
             if spmsg != "":
-                await intr01.channel.send(spmsg)
-
-            
-            emb = embed_gen(title="Please choose which section you are enrolled in.", color = 10181046)
-            ornth = lambda x: ["Unknown"] if x == [] else x
-            i = 0
-            n = 1
-            l = [f"Section {k} ({', '.join(ornth(list(set([c['instructor'] for (_, c) in v['components'].items()]))))})" for (k, v) in ans["sections"].items()]
-            ss = ""
-            for el in l:
-                if i > 9:
-                    i = 0
-                    emb.add_field(name=f"Available sections ({n})", value=ss)
-                    n+=1
-                    ss = ""
-                ss+=el+"\n"
-
-                i+=1
-
-            emb.add_field(name=f"Available sections ({n})", value=ss)
+                intr01.channel.send(spmsg)
             sls = []
             select = None
             if len(ans["sections"].keys()) < 25:
