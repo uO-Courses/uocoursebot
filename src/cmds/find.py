@@ -1,6 +1,6 @@
 import discord
 
-from lib.utils import parse_command, dayd, sttt, year, embed_gen, Pagination
+from lib.utils import dayd, sttt, embed_gen, Pagination, get_class
 
 
 def register_find(tree: discord.app_commands.CommandTree, client: discord.Client, uid_to_courses, gu):
@@ -8,34 +8,15 @@ def register_find(tree: discord.app_commands.CommandTree, client: discord.Client
     @tree.command(name="find", description="Find a course")
     async def slash_02(intr01: discord.Interaction, course_code: str, term: str="Fall"):
         userid = intr01.user.id
-        msgtx = f"{term.lower()} {course_code.replace(' ', '')}"
-        ans, b = parse_command(msgtx)
-        spmsg = ""
-        ff = "Fall"
+        await intr01.response.defer()
 
-        await intr01.response.defer(thinking=True)
-        if ans == None and b:
-            ff = "Winter"
-            ans, _ = parse_command(f'winter {msgtx}')
-        if ans == None:
-            if "winter" in msgtx:
-                ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
-                spmsg = "Course not found for Winter term but found for Fall term."
-            else:
-                ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
-                spmsg = "Course not found for Fall term but found for Winter term."
-        if ans != None:
-            if b:
-                await intr01.channel.send(f"No term specified, defaulting to {ff} {year}.")
-                
+        ans, spmsg, worked, _, _ = get_class(course_code, term)
+
+        if worked:
             if spmsg != "":
-                await intr01.channel.send(spmsg)
+                intr01.channel.send(spmsg)
 
             emb = embed_gen(title=f"{ ans['course_name'] } ({ans['subject_code']}{ans['course_code']})", color = 10181046)
-            
-            q = False
-
-            truncated = ""
             
             ttl = 0
 
@@ -62,11 +43,7 @@ def register_find(tree: discord.app_commands.CommandTree, client: discord.Client
 
                 ms  = "\n".join(tv)
 
-
-
-
                 ttl+=len(ms)
-                
 
                 emb.add_field(name=f"{tt} ({', '.join(profs)})", value=ms, inline=False)
 
@@ -95,4 +72,4 @@ def register_find(tree: discord.app_commands.CommandTree, client: discord.Client
             else:
                 await intr01.followup.send(embed=emb)
         else:
-            await intr01.channel.send(f"Could not find specified course ({msgtx.replace('winter ', '').replace('fall ', '').upper()})")
+            await intr01.followup.send(spmsg)

@@ -35,7 +35,7 @@ class Uocourse(discord.Client):
         with open("guilds.json", 'r') as f:
             g = json.loads(f.read())
 
-        tree.copy_global_to(guild=discord.Object(g[0]))
+        #tree.copy_global_to(guild=discord.Object(g[0]))
 
         await tree.sync()
 

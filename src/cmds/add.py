@@ -1,29 +1,9 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import parse_command, dayd, sttt, pat, year, embed_gen
+from lib.utils import pat, get_class
 
-def get_class(code, term): #/ -> (dict, msg, bool)
-    fxcode = code.replace(' ', '').upper()
-    ff = term.replace(' ', '').lower()
-    msgtx = f"{ff} {fxcode}"
-    ans, _ = parse_command(msgtx)
-    spmsg = ""
-    wrk = True
 
-    if ans == None:
-        if "winter" in msgtx:
-            ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
-            spmsg = "Course not found for Winter term but found for Fall term."
-        else:
-            ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
-            spmsg = "Course not found for Fall term but found for Winter term."
-    
-    if ans == None:
-        spmsg = f"Course not found ({fxcode})"
-        wrk = False
-
-    return ans, spmsg, wrk, msgtx, ff.upper()
 
 def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses, gu):
     @tree.command(name="add", description="Add a course")
@@ -110,3 +90,5 @@ def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses,
                 view.add_item(el)
 
             await intr01.followup.send(view=view, ephemeral=True)
+        else:
+            intr01.followup.send(spmsg)
