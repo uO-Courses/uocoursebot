@@ -131,7 +131,7 @@ def remember_accm(funcs, start, vars=[]):
   return vars
 
 def get_time(time):
-  get_unit_f, print_unit = lambda d, uname: lambda t: ((t - (t//d)*d), (t//d), uname), lambda v, uname: f"{v} {uname}{ '' if v == 1 else 's'} " if v != 0 else ""
+  get_unit_f, print_unit = lambda d, uname: lambda t: ((t - (t//d)*d), (t//d), uname), lambda v, uname: f"{v} {uname}{ '' if v == 1 else 's'}{'' if uname == 'second' else ' '}" if v != 0 else ""
   return ''.join([print_unit(a, b) for a, b in remember_accm([get_unit_f(x, y) for x, y in [(86400, 'day'), (3600, 'hour'), (60, 'minute'), (1, 'second')]], time)])
 
 cache = {}
