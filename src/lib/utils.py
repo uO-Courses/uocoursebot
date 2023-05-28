@@ -124,7 +124,8 @@ def check_if_exists(course_code):
     p = requests.get(f"https://catalogue.uottawa.ca/en/courses/{subject_code.lower()}/")
     return (f"{subject_code.upper()} {course_number}" in p.text or f"{subject_code.upper()} {course_number}" in p.text)
 
-def remember_accm(funcs, start, vars=[]):
+def remember_accm(funcs, start):
+  vars = []
   for f in funcs: 
     start, a, b = f(start)
     vars.append((a, b))
