@@ -124,16 +124,9 @@ def check_if_exists(course_code):
     p = requests.get(f"https://catalogue.uottawa.ca/en/courses/{subject_code.lower()}/")
     return (f"{subject_code.upper()} {course_number}" in p.text or f"{subject_code.upper()} {course_number}" in p.text)
 
-def remember_accm(funcs, start):
-  vars = []
-  for f in funcs: 
-    start, a, b = f(start)
-    vars.append((a, b))
-  return vars
-
 def get_time(time):
-  get_unit_f, print_unit = lambda d, uname: lambda t: ((t - (t//d)*d), (t//d), uname), lambda v, uname: f"{v} {uname}{ '' if v == 1 else 's'}{'' if uname == 'second' else ' '}" if v != 0 else ""
-  return ''.join([print_unit(a, b) for a, b in remember_accm([get_unit_f(x, y) for x, y in [(86400, 'day'), (3600, 'hour'), (60, 'minute'), (1, 'second')]], time)])
+  f = (lambda funcs, start: [(start := f(start[0] if type(start) == tuple else start)) for f in funcs])
+  return ''.join([(lambda v, uname: f"{v} {uname}{ '' if v == 1 else 's'}{'' if uname == 'second' else ' '}" if v != 0 else "")(a, b) for _, a, b in f([(lambda d, uname: lambda t: ((t - (t//d)*d), (t//d), uname))(x, y) for x, y in [(86400, 'day'), (3600, 'hour'), (60, 'minute'), (1, 'second')]], time)])  
 
 cache = {}
 
