@@ -24,7 +24,7 @@ def register_buddy(tree, client, uid_to_courses, gu):
                             u_to_buddy[id].append(k)
         
         embs = []
-        emb = embed_gen(title="People who are in the same sections as you (1)", color = 10181046)
+        emb = embed_gen(title=f"People who are in the same sections as {'you' if user==None else user.name} (1)", color = 10181046)
         i = 0
         n = 1
 
