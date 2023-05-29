@@ -1,7 +1,7 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import parse_command, dayd, sttt, embed_gen
+from lib.utils import embed_gen
 
 def register_remove(tree, client, uid_to_courses, gu):
     @tree.command(name="remove", description="Remove a course")

@@ -130,57 +130,7 @@ def get_time(time):
 
 cache = {}
 
-def get_class(code, term): #/ -> (dict, msg, bool)
 
-    scode = code.upper().replace(' ', '')
-
-    if term in cache:
-
-        if scode in cache[term]:
-            
-            return cache[term][scode]
-
-    fxcode = code.replace(' ', '').upper()
-
-    ff = term.replace(' ', '').lower()
-    msgtx = f"{ff} {fxcode}"
-
-    if len(fxcode) > 8 or not fxcode[0:3].isalpha() or not fxcode[3:7].isnumeric():
-        if fxcode[0:3].isalpha() and fxcode[3:7].isnumeric():
-            return None, f"Course code ({fxcode}) is invalid. Did you mean {fxcode[0:7]}?", False, msgtx, ff.upper()
-        else:
-            return None, f"Course code ({fxcode}) is invalid.", False, msgtx, ff.upper()
-        
-    if not check_if_exists(fxcode):
-        return None, f"Course {fxcode} doesn't exist.", False, msgtx, ff.upper()
-    
-    ans, _ = parse_command(msgtx)
-    spmsg = ""
-    wrk = True
-
-    if ans == None:
-        if "winter" in msgtx:
-            ans, _ = parse_command(f'{msgtx.replace("winter", "fall")}')
-            spmsg = "Course not found for Winter term but found for Fall term."
-        else:
-            ans, _ = parse_command(f'{msgtx.replace("fall", "winter")}')
-            spmsg = "Course not found for Fall term but found for Winter term."
-    
-    if ans == None:
-        spmsg = f"Course not found ({fxcode})"
-        wrk = False
-
-    res = (ans, spmsg, wrk, msgtx, ff.upper())
-
-    if wrk:
-        if term in cache:
-            cache[term][scode] = res
-        else:
-            cache[term] = {
-                scode: res
-            }
-
-    return res
 
 def embed_gen(*args, **kwargs):
     emb =  discord.Embed(*args, **kwargs)

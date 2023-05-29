@@ -1,6 +1,6 @@
 import discord, time
 
-from lib.utils import embed_gen, pretty_print_user, get_time
+from lib.utils import get_time
 
 etime = time.time()
 
