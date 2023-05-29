@@ -5,8 +5,11 @@ from lib.utils import embed_gen, pretty_print_user
 
 def register_buddy(tree, client, uid_to_courses, gu):
     @tree.command(name="buddy", description="Find people in the same sections as you")
-    async def slash_02(intr01: discord.Interaction, minimum: int = 1):
+    async def slash_02(intr01: discord.Interaction, minimum: int = 1, user: discord.User=None):
         userid = intr01.user.id
+
+        if user != None:
+            userid = user.id
 
         await intr01.response.defer()
 

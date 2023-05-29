@@ -5,8 +5,12 @@ from lib.utils import embed_gen
 def register_me(tree, client, uid_to_courses, gu):
     
     @tree.command(name="profile", description="View your courses")
-    async def slash_03(intr01: discord.Interaction):
+    async def slash_03(intr01: discord.Interaction, user: discord.User=None):
         userid = intr01.user.id
+
+        if user != None:
+            userid = user.id
+
         await intr01.response.defer(thinking=True)
         fall = embed_gen(title="Your Fall courses.", color = 10181046)
         winter = embed_gen(title="Your Winter courses", color = 10181046)
