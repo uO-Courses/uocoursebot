@@ -1,7 +1,5 @@
 import discord, time
 
-from lib.utils import embed_gen, pretty_print_user
-
 etime = time.time()
 
 def register_adm(tree, client, uid_to_courses, gu):

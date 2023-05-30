@@ -1,25 +1,25 @@
 import discord 
 from discord.ui import Select, View
 
-from lib.utils import embed_gen, get_class, pretty_print_user
+from lib.utils import embed_gen
 from lib.rmp import get_prof
+from lib.course import Courses
 
 def register_prof(tree, client, uid_to_courses, gu):
     
     @tree.command(name="prof", description="View your courses")
     async def slash_03(intr01: discord.Interaction, course_code: str, term: str="Fall"):
-        
+        cs = Courses()
+
         await intr01.response.defer()
 
-        ans, spmsg, worked, _, _ = get_class(course_code, term)
+        course, spmsg, worked, _, _ = cs(course_code, term)
 
         if worked:
             if spmsg != "":
                 await intr01.channel.send(spmsg)
 
-            profs = set([c["instructor"] for section in ans["sections"].values() for c in section["components"].values()])
-
-            profs = list(filter(("Unknown").__ne__, profs))
+            profs = course.get_profs()
 
             if len(profs) != 0:
 

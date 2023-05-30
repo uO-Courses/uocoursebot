@@ -1,6 +1,6 @@
 import discord 
 
-from lib.utils import embed_gen, pretty_print_user
+from lib.utils import embed_gen
 
 def register_me(tree, client, uid_to_courses, gu):
     

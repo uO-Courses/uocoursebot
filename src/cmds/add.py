@@ -1,7 +1,9 @@
 import discord, json
 from discord.ui import Select, View
 
-from lib.utils import pat, get_class
+from lib.utils import pat
+
+from lib.course import Courses
 
 
 
@@ -9,22 +11,23 @@ def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses,
     @tree.command(name="add", description="Add a course")
     async def slash_01(intr01: discord.Interaction, course_code: str, term: str="Fall"):
         userid = intr01.user.id
+        cs = Courses()
 
         await intr01.response.defer(thinking=True)
-        ans, spmsg, worked, msgtx, ff = get_class(course_code, term)
+        course, spmsg, worked, msgtx, ff = cs(course_code, term)
 
         if worked:
             if spmsg != "":
                 intr01.channel.send(spmsg)
             sls = []
             select = None
-            if len(ans["sections"].keys()) < 25:
+            if len(course.sections.keys()) < 25:
                 select = Select(
                     placeholder="Choose your section",
                     options=[
                         discord.SelectOption(
                             label=f"Section {secc}",
-                        ) for secc in ans["sections"].keys()
+                        ) for secc in course.sections.keys()
                     ]
                 )
 
@@ -34,7 +37,7 @@ def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses,
                 sls = []
                 i = 0
                 n = 0
-                for el in ans["sections"].keys():
+                for el in course.sections.keys():
                     if i >= 24:
                         sls.append(Select(
                             placeholder=f"Choose your section ({n})",
