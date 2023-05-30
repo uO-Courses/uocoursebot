@@ -52,4 +52,4 @@ tree = discord.app_commands.CommandTree(client)
 
 register(tree, client, uid_to_courses)
 
-client.run(os.environ.get("UOCBOT-TEST"))
+client.run(os.environ.get("UOCBOT"))

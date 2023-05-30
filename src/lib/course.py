@@ -2,7 +2,7 @@ from lib.utils import check_if_exists, parse_command
 
 class Courses:
 
-    inst = None
+    _inst = None
 
     def __new__(cls):
         if cls._inst is None:
@@ -14,9 +14,11 @@ class Courses:
         self.cache = {}
 
     def other_term(self, term):
-        return (['winter', 'fall'] - [term])[0]
+        x = ['winter', 'fall']
+        x.remove(term.lower())
+        return (x)[0]
 
-    def get_class(self, code, term):
+    def __call__(self, code, term):
 
         scode = code.upper().replace(' ', '')
 
@@ -66,7 +68,7 @@ class Courses:
             spmsg = f"Course not found ({fxcode})"
             wrk = False
 
-        res = (ans, spmsg, wrk, msgtx, ff.upper())
+        res = (Course(ans), spmsg, wrk, msgtx, ff.upper())
 
         if wrk:
             if term in self.cache:
@@ -76,7 +78,7 @@ class Courses:
                     scode: res
                 }
 
-        return Course(res[0]), res[1:]
+        return res
     
 class Course:
     
