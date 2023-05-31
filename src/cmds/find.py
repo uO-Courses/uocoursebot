@@ -15,6 +15,8 @@ def register_find(tree: discord.app_commands.CommandTree, client: discord.Client
     async def slash_02(intr01: discord.Interaction, course_code: str, term: discord.app_commands.Choice[str]="Fall"):
         cs = Courses()
 
+        term = term if type(term) is str else term.value
+
         await intr01.response.defer()
 
         course, spmsg, worked, _, _ = cs(course_code, term)

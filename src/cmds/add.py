@@ -14,6 +14,9 @@ def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses,
         discord.app_commands.Choice(name='Winter', value='Winter')
     ])
     async def slash_01(intr01: discord.Interaction, course_code: str, term: discord.app_commands.Choice[str]="Fall"):
+
+        term = term if type(term) is str else term.value
+
         userid = intr01.user.id
         cs = Courses()
 
