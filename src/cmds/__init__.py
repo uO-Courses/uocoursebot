@@ -1,4 +1,4 @@
-from . import add, find, me, who, remove, buddy, adm, prof
+from . import add, find, me, who, remove, buddy, adm, prof, program
 import json
 
 def register(tree, bot, utc):
@@ -14,3 +14,4 @@ def register(tree, bot, utc):
     buddy.register_buddy(tree, bot, utc, g)
     adm.register_adm(tree, bot, utc, g)
     prof.register_prof(tree, bot, utc, g)
+    program.register_program(tree, bot, utc, g)

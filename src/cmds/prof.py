@@ -8,7 +8,11 @@ from lib.course import Courses
 def register_prof(tree, client, uid_to_courses, gu):
     
     @tree.command(name="prof", description="View your courses")
-    async def slash_03(intr01: discord.Interaction, course_code: str, term: str="Fall"):
+    @discord.app_commands.choices(term=[
+        discord.app_commands.Choice(name='Fall', value='Fall'),
+        discord.app_commands.Choice(name='Winter', value='Winter')
+    ])
+    async def slash_03(intr01: discord.Interaction, course_code: str, term: discord.app_commands.Choice[str]="Fall"):
         cs = Courses()
 
         await intr01.response.defer()
