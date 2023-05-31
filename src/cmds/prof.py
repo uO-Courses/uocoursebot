@@ -15,6 +15,8 @@ def register_prof(tree, client, uid_to_courses, gu):
     async def slash_03(intr01: discord.Interaction, course_code: str, term: discord.app_commands.Choice[str]="Fall"):
         cs = Courses()
 
+        term = term if type(term) is str else term.value
+
         await intr01.response.defer()
 
         course, spmsg, worked, _, _ = cs(course_code, term)
