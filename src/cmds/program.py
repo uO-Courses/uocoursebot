@@ -20,7 +20,13 @@ def register_program(tree: discord.app_commands.CommandTree, client: discord.Cli
         discord.app_commands.Choice(name=eng_name, value=eng_name)
         for eng_name in eng.keys()
     ])
-    async def slash_02(intr01: discord.Interaction, program_name: discord.app_commands.Choice[str]):
+    @discord.app_commands.choices(year=([discord.app_commands.Choice(name="All", value=0)] + [
+        discord.app_commands.Choice(name=f"Year {n}", value=n)
+        for n in range(1, 5)
+    ]))
+    async def slash_02(intr01: discord.Interaction, program_name: discord.app_commands.Choice[str], year: discord.app_commands.Choice[int]=0):
+
+        year = year if type(year) is int else year.value
 
         await intr01.response.defer()
 
@@ -45,14 +51,18 @@ def register_program(tree: discord.app_commands.CommandTree, client: discord.Cli
             y = 1
             
             for x in v:
-                embed = embed_gen(title=f"Year {y}", color = 10181046)
-                for k, va in x.items():
-                    #print(va)
-                    embed.add_field(name=f"{k.capitalize()} term", value="\n".join([f"`{el}`" for el in va]), inline=False)
+                if year == 0 or year == y:
+
+                    embed = embed_gen(title=f"Year {y}", color = 10181046)
+                    for k, va in x.items():
+                        #print(va)
+                        embed.add_field(name=f"{k.capitalize()} term", value="\n".join([f"`{el}`" for el in va]), inline=False)
+
+                    embs.append(embed)
+
 
                 y+=1
 
-                embs.append(embed)
 
             await intr02.followup.send(embeds=embs)
 
