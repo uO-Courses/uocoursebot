@@ -28,9 +28,11 @@ def register_program(tree: discord.app_commands.CommandTree, client: discord.Cli
 
         rnames = rrd.keys()
 
+        print(rnames)
+
 
         select = discord.ui.Select(placeholder="Select your program", options=[
-            discord.SelectOption(label=n)
+            discord.SelectOption(label=n) if len(n) < 100 else discord.SelectOption(label=f"{n[0:97]}...")
             for n in rnames
         ])
 
