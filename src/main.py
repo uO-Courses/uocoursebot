@@ -32,12 +32,10 @@ with open("utc.json", 'r') as f:
 
 class Uocourse(discord.Client):
     async def on_ready(self):
-        with open("guilds.json", 'r') as f:
-            g = json.loads(f.read())
 
-        #tree.copy_global_to(guild=discord.Object(g[0]))
+        tree.copy_global_to(guild=discord.Object(776251117616234506))
 
-        await tree.sync()
+        l = await tree.sync()
 
         print('Logged in as', self.user)
 
