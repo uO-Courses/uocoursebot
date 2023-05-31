@@ -87,7 +87,10 @@ class Uocourse(discord.Client):
                             with open("utc.json", 'w') as f:
                                 f.write(json.dumps(uid_to_courses, indent=4))
                 else:
-                    await message.channel.send("Your message does not contain a file.", reference=message)
+                    if mra[message.reference.message_id] == message.author.id:
+                        await message.channel.send("Your message does not contain a file.", reference=message)
+                    else:
+                        await message.channel.send("Please use /import to import your own schedule.", reference=message)
 
 
 intents = discord.Intents.default()
