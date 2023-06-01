@@ -27,10 +27,47 @@ uid_to_courses = {
      
 }
 
+preferences = {
+
+}
+
 with open("utc.json", 'r') as f:
     uid_to_courses = json.loads(f.read())
 
+with open("preferences.json", 'r') as f:
+    uid_to_courses = json.loads(f.read())
+
 mra = {}
+
+class SharedData:
+    def __init__(self, utc, pref):
+        self.utc = utc
+        self.pref = pref
+        self.defaults = {
+            'has_added_courses': False
+        }
+
+    def update_utc(self, uid_to_courses):
+        with open("utc.json", 'w') as f:
+            f.write(json.dumps(uid_to_courses, indent=4))
+
+    def get_preference(self, userid, preference_name):
+        if userid in self.pref.keys():
+            if preference_name in self.pref[userid]:
+                return self.pref[userid][preference_name]
+        return self.defaults[preference_name]
+
+    def set_preference(self, userid, preference_name, value):
+        if userid in self.pref.keys():
+            self.pref[userid][preference_name] = value
+        else:
+            self.pref[userid] = {preference_name: value}
+
+        with open("preferences.json", 'w') as f:
+            f.write(json.dumps(self.pref, indent=4))
+
+    
+s_d = SharedData(uid_to_courses, preferences)
 
 class Uocourse(discord.Client):
     async def on_ready(self):
@@ -53,6 +90,9 @@ class Uocourse(discord.Client):
                         await message.channel.send("Please use /import to import your own schedule.", reference=message)
 
 async def tt(msg_or_int, attchs: list[discord.Attachment], userid):
+
+    uid_to_courses = s_d.utc
+
     ff = [await att.read() for att in attchs]
     ct = True
 
@@ -90,8 +130,9 @@ async def tt(msg_or_int, attchs: list[discord.Attachment], userid):
                     ttx.append(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.")
 
             await msg_or_int.channel.send("\n\n".join(ttx))
-            with open("utc.json", 'w') as f:
-                f.write(json.dumps(uid_to_courses, indent=4))
+            s_d.update_utc(uid_to_courses)
+            s_d.set_preference(userid, 'has_added_courses', True)
+            
 
 
 
@@ -120,6 +161,6 @@ async def slash_06(intr01: discord.Interaction, file_fall: discord.Attachment=No
 
 
 
-register(tree, client, uid_to_courses)
+register(tree, client, s_d)
 
 client.run(os.environ.get("UOCBOT"))

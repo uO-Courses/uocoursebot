@@ -3,9 +3,12 @@ from discord.ui import Select, View
 
 from lib.utils import embed_gen
 
-def register_remove(tree, client, uid_to_courses, gu):
+def register_remove(tree, client, s_d, gu):
     @tree.command(name="remove", description="Remove a course")
     async def slash_04(intr01: discord.Interaction):
+
+        uid_to_courses = s_d.utc
+
         userid = intr01.user.id
         await intr01.response.defer(thinking=True)
         emb = embed_gen(title="Choose which section to remove.", color = 10181046)
@@ -32,8 +35,7 @@ def register_remove(tree, client, uid_to_courses, gu):
                 v = uid_to_courses[val]
                 if userid in v:
                     v.remove(userid)
-                with open("utc.json", 'w') as f:
-                    f.write(json.dumps(uid_to_courses, indent=4))
+                s_d.update_utc(uid_to_courses)
 
                 await intr01.followup.send(f"Sucessfully deleted {val}.")
                 

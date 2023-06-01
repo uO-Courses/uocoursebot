@@ -2,10 +2,13 @@ import discord
 
 from lib.utils import embed_gen
 
-def register_me(tree, client, uid_to_courses, gu):
+def register_me(tree, client, s_d, gu):
     
     @tree.command(name="profile", description="View your courses")
     async def slash_03(intr01: discord.Interaction, user: discord.User=None):
+
+        uid_to_courses = s_d.utc
+
         userid = intr01.user.id
 
         if user != None:

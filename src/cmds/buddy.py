@@ -3,9 +3,12 @@ from discord.ui import Select, View
 
 from lib.utils import embed_gen, pretty_print_user
 
-def register_buddy(tree, client, uid_to_courses, gu):
+def register_buddy(tree, client, s_d, gu):
     @tree.command(name="buddy", description="Find people in the same sections as you")
     async def slash_02(intr01: discord.Interaction, minimum: int = 1, user: discord.User=None):
+
+        uid_to_courses = s_d.utc
+
         userid = intr01.user.id
 
         if user != None:
@@ -44,6 +47,8 @@ def register_buddy(tree, client, uid_to_courses, gu):
 
         if emb.fields == []:
             emb.description = f"Unfortunately, no one is in {minimum} or more identical sections to you."
+            if s_d.get_preference(userid, 'has_added_courses') is False:
+                emb.description = f"You haven't added any courses yet. To find buddies, you need to add your own courses using either /import (recommended) or /add."
 
         await intr01.followup.send(embed=embs[0])
         for em in embs[1:-1]:
