@@ -2,10 +2,13 @@ import discord
 
 from lib.utils import embed_gen, pretty_print_user
 
-def register_who(tree, client, uid_to_courses, gu):
+def register_who(tree, client, s_d, gu):
     
     @tree.command(name="who", description="View who is enrolled in a class")
     async def slash_03(intr01: discord.Interaction, course_code: str):
+
+        uid_to_courses = s_d.utc
+
         cc = course_code.replace(" ", "").upper()
         await intr01.response.defer(thinking=True)
         emb = embed_gen(title=f"People enrolled in {cc}", color = 10181046)

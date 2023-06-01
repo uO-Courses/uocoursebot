@@ -7,13 +7,15 @@ from lib.course import Courses
 
 
 
-def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses, gu):
+def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
     @tree.command(name="add", description="Add a course")
     @discord.app_commands.choices(term=[
         discord.app_commands.Choice(name='Fall', value='Fall'),
         discord.app_commands.Choice(name='Winter', value='Winter')
     ])
     async def slash_01(intr01: discord.Interaction, course_code: str, term: discord.app_commands.Choice[str]="Fall"):
+
+        uid_to_courses = s_d.utc
 
         term = term if type(term) is str else term.value
 
@@ -87,8 +89,8 @@ def register_add(tree: discord.app_commands.CommandTree, client, uid_to_courses,
                         else:
                             uid_to_courses[tname] = [userid]
                             await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.", ephemeral=True)
-                        with open("utc.json", 'w') as f:
-                            f.write(json.dumps(uid_to_courses, indent=4))
+                        s_d.update_utc(uid_to_courses)
+                        s_d.set_preference(userid, 'has_added_courses', True)
                 return just_some_callback
             
             view = View()
