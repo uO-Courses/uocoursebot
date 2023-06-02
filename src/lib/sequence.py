@@ -18,6 +18,18 @@ eng = {name: '-'.join(name.split(" ")[0:2]).lower() for name in [
     "Software Engineering"
 ]}
 
+### Science
+##! Programs
+sci = {
+    name: '-'.join(name.split(" ")).lower() for name in [
+        "Biochemistry"
+        "Biology"
+        "Biopharmaceutical Science"
+        "Environmental Geoscience"
+        "Life Sciences"
+    ]
+}
+
 #// Honours BSc in Biochemistry 
 eng_link = lambda n: f"https://www.uottawa.ca/faculty-engineering/undergraduate-studies/programs/{n}/course-sequence"
 
