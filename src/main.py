@@ -35,7 +35,7 @@ with open("utc.json", 'r') as f:
     uid_to_courses = json.loads(f.read())
 
 with open("preferences.json", 'r') as f:
-    uid_to_courses = json.loads(f.read())
+    preferences = json.loads(f.read())
 
 mra = {}
 
@@ -164,3 +164,4 @@ async def slash_06(intr01: discord.Interaction, file_fall: discord.Attachment=No
 register(tree, client, s_d)
 
 client.run(os.environ.get("UOCBOT"))
+
