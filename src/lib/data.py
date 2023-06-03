@@ -5,7 +5,8 @@ class SharedData:
         self.utc = utc
         self.pref = pref
         self.defaults = {
-            'has_added_courses': False
+            'has_added_courses': False,
+            'year': 1
         }
 
     def update_utc(self, uid_to_courses):
