@@ -163,5 +163,5 @@ async def slash_06(intr01: discord.Interaction, file_fall: discord.Attachment=No
 
 register(tree, client, s_d)
 
-client.run(os.environ.get("UOCBOT"))
+client.run(os.environ.get("UOCBOT-TEST"))
 
