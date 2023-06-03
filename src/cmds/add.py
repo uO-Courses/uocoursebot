@@ -8,6 +8,34 @@ from lib.course import Courses
 
 
 def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
+
+    def get_just_some_callback(obj, ccode, uid_to_courses, userid, ff):
+        async def just_some_callback(intr):
+
+            if intr.user.id == userid:
+                sl = obj.values[0]
+
+                sec = sl.upper().replace("SECTION", "").replace(" ", "")
+                tname = f"{ccode.upper()}-{sec}-{ff.upper()}"
+                if tname in uid_to_courses:
+                    if userid in uid_to_courses[tname]:
+                        await intr.response.send_message("You have already added this section.")
+                    else:
+                        uid_to_courses[tname].append(userid)
+                        r = []
+                        for u in uid_to_courses[tname]:
+                            ue = await client.fetch_user(u)
+                            r.append(ue.name)
+
+                        rr = '\n'.join(r)
+                        await intr.response.send_message(f"Succesfully added {tname.upper()}. The following people are in this section: \n{rr}.", ephemeral=True)
+                else:
+                    uid_to_courses[tname] = [userid]
+                    await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.", ephemeral=True)
+                s_d.update_utc(uid_to_courses)
+                s_d.set_preference(userid, 'has_added_courses', True)
+        return just_some_callback
+
     @tree.command(name="add", description="Add a course")
     @discord.app_commands.choices(term=[
         discord.app_commands.Choice(name='Fall', value='Fall'),
@@ -66,39 +94,14 @@ def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
                             ))
 
             ccode = "".join(pat.findall(msgtx)[0])
-            def get_just_some_callback(obj):
-                async def just_some_callback(intr):
 
-                    if intr.user.id == userid:
-                        sl = obj.values[0]
-
-                        sec = sl.upper().replace("SECTION", "").replace(" ", "")
-                        tname = f"{ccode.upper()}-{sec}-{ff.upper()}"
-                        if tname in uid_to_courses:
-                            if userid in uid_to_courses[tname]:
-                                await intr.response.send_message("You have already added this section.")
-                            else:
-                                uid_to_courses[tname].append(userid)
-                                r = []
-                                for u in uid_to_courses[tname]:
-                                    ue = await client.fetch_user(u)
-                                    r.append(ue.name)
-
-                                rr = '\n'.join(r)
-                                await intr.response.send_message(f"Succesfully added {tname.upper()}. The following people are in this section: \n{rr}.", ephemeral=True)
-                        else:
-                            uid_to_courses[tname] = [userid]
-                            await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.", ephemeral=True)
-                        s_d.update_utc(uid_to_courses)
-                        s_d.set_preference(userid, 'has_added_courses', True)
-                return just_some_callback
             
             view = View()
 
             if select is not None:
-                select.callback = get_just_some_callback(select)
+                select.callback = get_just_some_callback(select, ccode, uid_to_courses, userid, ff)
             for el in sls:
-                el.callback = get_just_some_callback(el)
+                el.callback = get_just_some_callback(el, ccode, uid_to_courses, userid, ff)
                 view.add_item(el)
 
             await intr01.followup.send(view=view, ephemeral=True)
