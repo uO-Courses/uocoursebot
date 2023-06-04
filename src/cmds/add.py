@@ -59,10 +59,6 @@ def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
             sls = []
             select = None
 
-            ## TODO, support course sections 
-            ## into groups of 25 and simply 
-            ## iterate over that
-
             sls = [discord.SelectOption(label=f"Section {el}") for el in course.sections.keys()]
             fsls = [Select(placeholder=f"Choose your section ({int(x[1])+1})", options=x[0]) for x in [(sls[i:i+25], i/25) for i in range(0, len(sls), 25)]]
 
