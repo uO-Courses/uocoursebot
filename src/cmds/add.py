@@ -58,49 +58,19 @@ def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
                 intr01.channel.send(spmsg)
             sls = []
             select = None
-            if len(course.sections.keys()) < 25:
-                select = Select(
-                    placeholder="Choose your section",
-                    options=[
-                        discord.SelectOption(
-                            label=f"Section {secc}",
-                        ) for secc in course.sections.keys()
-                    ]
-                )
 
-                sls.append(select)
-            else:
-                up = []
-                sls = []
-                i = 0
-                n = 0
-                for el in course.sections.keys():
-                    if i >= 24:
-                        sls.append(Select(
-                            placeholder=f"Choose your section ({n})",
-                            options=up
-                        ))
-                        up = []
-                        i = 0
-                        n += 1
+            ## TODO, support course sections 
+            ## into groups of 25 and simply 
+            ## iterate over that
 
-                    up.append(discord.SelectOption(label=f"Section {el}"))
-
-                    i+=1
-
-                sls.append(Select(
-                                placeholder=f"Choose your section ({n})",
-                                options=up
-                            ))
+            sls = [discord.SelectOption(label=f"Section {el}") for el in course.sections.keys()]
+            fsls = [Select(placeholder=f"Choose your section ({int(x[1])+1})", options=x[0]) for x in [(sls[i:i+25], i/25) for i in range(0, len(sls), 25)]]
 
             ccode = "".join(pat.findall(msgtx)[0])
 
-            
             view = View()
 
-            if select is not None:
-                select.callback = get_just_some_callback(select, ccode, uid_to_courses, userid, ff)
-            for el in sls:
+            for el in fsls:
                 el.callback = get_just_some_callback(el, ccode, uid_to_courses, userid, ff)
                 view.add_item(el)
 
