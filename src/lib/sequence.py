@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
-import requests, re
+import requests, re, discord
+
+from lib.utils import embed_gen
 
 pat = re.compile(r"(.{3}.?\d{4}\d?)")
 
@@ -105,4 +107,68 @@ def get_science(program_name: str):
                 rrd[r[i]] = r2
 
     return rrd
+
+
+def program_maker(g, name, program_dic, func, s_d):
+    @g.command(name=name)
+    @discord.app_commands.choices(program_name=[
+        discord.app_commands.Choice(name=nm, value=nm)
+        for nm in program_dic.keys()
+    ])
+    @discord.app_commands.choices(year=([discord.app_commands.Choice(name="All", value=0)] + [
+        discord.app_commands.Choice(name=f"Year {n}", value=n)
+        for n in range(1, 5)
+    ]))
+    async def slash_02(intr01: discord.Interaction, program_name: discord.app_commands.Choice[str], year: discord.app_commands.Choice[int]=-1):
+
+        if type(year) is int:
+            year = s_d.get_preference(intr01.user.id, 'year')
+        else:
+            year = year.value
+
+        await intr01.response.defer()
+
+        rrd = func(program_name.value)
+
+        rnames = rrd.keys()
+
+        select = discord.ui.Select(placeholder="Select your program", options=[
+            discord.SelectOption(label=n) if len(n) < 100 else discord.SelectOption(label=f"{n[0:97]}...")
+            for n in rnames
+        ])
+
+        async def some_callback(intr02: discord.Interaction):
+
+            await intr02.response.defer()
+
+            selected = select.options[0]
+
+            v = rrd[selected.value]
+
+            embs = []
+            y = 1
+            
+            for x in v:
+                if year == 0 or year == y:
+
+                    embed = embed_gen(title=f"Year {y}", color = 10181046)
+                    for k, va in x.items():
+                        #print(va)
+                        embed.add_field(name=f"{k.capitalize()} term", value="\n".join([f"`{el}`" for el in va]), inline=False)
+
+                    embs.append(embed)
+
+
+                y+=1
+
+
+            await intr02.followup.send(embeds=embs)
+
+        select.callback = some_callback
+
+        v = discord.ui.View()
+        
+        v.add_item(select)
+
+        await intr01.followup.send(view=v)
 

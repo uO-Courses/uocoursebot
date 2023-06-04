@@ -27,3 +27,17 @@ class SharedData:
 
         with open("preferences.json", 'w') as f:
             f.write(json.dumps(self.pref, indent=4))
+
+    def get_courses(self, userid):
+        d = []
+        for k, v in self.utc.items():
+            if userid in v:
+                d.append(k)
+
+        return d
+
+    async def get_enrolled_in(self, f, course):
+        if course in self.utc.keys():
+            return [await f(x) for x in self.utc[course]]
+        else:
+            return []
