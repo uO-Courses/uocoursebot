@@ -38,9 +38,11 @@ with open("utc.json", 'r') as f:
 with open("preferences.json", 'r') as f:
     preferences = json.loads(f.read())
 
+s_d = SharedData(uid_to_courses, preferences)
+
+
 mra = {}
     
-s_d = SharedData(uid_to_courses, preferences)
 
 class Uocourse(discord.Client):
     async def on_ready(self):
