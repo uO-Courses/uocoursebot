@@ -12,9 +12,9 @@ def get_callbacker(item: Select, id, sv: ScheduleViewer):
     async def callback(intr01: discord.Interaction):
 
 
-        res = item.values[0]
+        res = int(item.values[0])
 
-        if not sv.check_if_fits(sv.options[id][res]):
+        if res != -1 and not sv.check_if_fits(sv.options[id][res]):
             await intr01.response.defer(thinking=True, ephemeral=True)
 
             txt = f"This component conflicts with your other selected components (\n{sv.why})."

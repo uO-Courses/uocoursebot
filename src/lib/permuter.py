@@ -92,7 +92,7 @@ class ScheduleViewer(discord.ui.View):
         enda = (a[3], a[4])
         endb = (b[3], b[4])
 
-        #//print(a[0], b[0])
+        ##print(a[0], b[0])
 
 
         contains = lambda a, c: lambda b: a[0] <= b[0] and a[1] <= b[1] and b[0] <= c[0] and b[1] <= c[1]

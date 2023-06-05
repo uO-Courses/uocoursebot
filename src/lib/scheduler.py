@@ -84,7 +84,7 @@ class ScheduleImage:
             thisr = el[1] - start_hour
             sx, sy  = self.get_tile(el[5], thisr)
             sy += int(self.sh * el[2]/60)
-            thise = el[4] - start_hour
+            thise = el[3] - start_hour
             ex, ey = self.get_tile(el[5], thise)
             ey += int(self.sh * el[4]/60)
             
