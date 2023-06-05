@@ -1,5 +1,5 @@
 import enum
-from lib.utils import check_if_exists, parse_command
+from lib.utils import check_if_exists, parse_command, dayd
 
 class Courses:
 
@@ -120,6 +120,8 @@ class Component:
         self.end_time_12hr = ans["end_time_12hr"]
         start_time = ans["start_time"]
         end_time = ans["end_time"]
+        self.id = ans["id"]
+        self.rday = dayd[ans["day"]]
         if ans["type"] == "LEC":
             self.type = CComponentType.Lec
         elif ans["type"] == "DGD":
@@ -132,9 +134,9 @@ class Component:
             self.type = CComponentType.Lec
 
         self.start_hour = int(start_time.split(":")[0])
-        self.start_minute = int(start_time.split(":")[0])
+        self.start_minute = int(start_time.split(":")[1])
 
         self.end_hour = int(end_time.split(":")[0])
-        self.end_minute = int(end_time.split(":")[0])
+        self.end_minute = int(end_time.split(":")[1])
         
         self.day = ans["day"]
