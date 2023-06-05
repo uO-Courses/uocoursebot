@@ -64,6 +64,8 @@ class Uocourse(discord.Client):
                     else:
                         await message.channel.send("Please use /import to import your own schedule.", reference=message)
 
+
+
 async def tt(msg_or_int, attchs: list[discord.Attachment], userid):
 
     uid_to_courses = s_d.utc
@@ -115,6 +117,10 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = Uocourse(intents=intents)
 tree = discord.app_commands.CommandTree(client)
+
+@client.event
+async def on_command_error(ctx, error):
+    await ctx.send(f"{error}")
 
 @tree.command(name="import", description="Import your schedule from uSchedule.me")
 async def slash_06(intr01: discord.Interaction, file_fall: discord.Attachment=None, file_winter: discord.Attachment=None):

@@ -1,3 +1,4 @@
+import itertools
 import math
 import discord
 
@@ -33,6 +34,9 @@ class ScheduleViewer(discord.ui.View):
         self.term = courses[0][2].lower()
 
         self.generate_options(courses)
+        
+        self.max = {k: False for k, _ in enumerate(self.selected)}
+
         super().__init__(timeout=100)
         
 
@@ -45,25 +49,35 @@ class ScheduleViewer(discord.ui.View):
         mandatory = []
 
         for sec, crs in d:
+            for _, comp in sec.components.items():
+                data = (f"{crs} " + " " +  comp.id, comp.start_hour, comp.start_minute, comp.end_hour, comp.end_minute, daydat[comp.day], comp.type, crs, comp)
+                if comp.type == CComponentType.Lec:
+                    mandatory.append(data)
+
+        self.mandatory = mandatory
+
+        for sec, crs in d:
             sub = {
 
             }
             for _, comp in sec.components.items():
-                data = (f"{crs} " + " " +  comp.type, comp.start_hour, comp.start_minute, comp.end_hour, comp.end_minute, daydat[comp.day])
-                if comp.type == CComponentType.Lec:
-                    mandatory.append(data)
-                else:
-                    if comp.type in sub.keys():
-                        sub[comp.type].append(data)
+                data = (f"{crs} " + " " +  comp.id, comp.start_hour, comp.start_minute, comp.end_hour, comp.end_minute, daydat[comp.day], comp.type, crs, comp)
+                if not comp.type == CComponentType.Lec:
+                    if self.check_if_fits(data, True):
+                        if comp.type in sub.keys():
+                            sub[comp.type].append(data)
+                        else:
+                            sub[comp.type] = [data]
                     else:
-                        sub[comp.type] = [data]
+                        pass
+                        #print(self.why)
 
             options.extend([v for _, v in sub.items()])
 
         selected = []
 
         for _ in range(len(options)):
-            selected.append(0)
+            selected.append(-1)
 
         self.index = 0
 
@@ -71,12 +85,39 @@ class ScheduleViewer(discord.ui.View):
         self.selected = selected
         self.mandatory = mandatory
         self.total_permutations = math.prod([len(x)+1 for x in self.options])
+    
+    def overlaps(self, a, b):
+        starta = (a[1], a[2])
+        startb = (b[1], b[2])
+        enda = (a[3], a[4])
+        endb = (b[3], b[4])
 
-    def generate_from_selected(self):
+        ##print(a[0], b[0])
+
+
+        contains = lambda a, c: lambda b: a[0] <= b[0] and a[1] <= b[1] and b[0] <= c[0] and b[1] <= c[1]
+
+        a_contains = contains(starta, enda)
+        b_contains = contains(startb, endb)
+
+        r = (a_contains(startb), a_contains(endb), b_contains(starta), b_contains(enda))
+        i = a[5] == b[5]
+        if any(r) and i:
+            self.why += f"{a[0]} ({a[8].rday} {a[8].start_time_12hr} - {a[8].end_time_12hr}) and {b[0]} ({b[8].rday} {b[8].start_time_12hr} - {b[8].end_time_12hr}) overlap ({(starta, startb, enda, endb)}\n{r}).\n\n"
+
+        return any(r) and i
+
+    def check_if_fits(self, new, _pre=False):
+        self.why = ""
+        total = self.generate_from_selected(_pre)
+        return not any([self.overlaps(new, el) for el in total])
+
+    def generate_from_selected(self, _pre=False):
         total = [] + self.mandatory
-        for i in range(len(self.selected)):
-            if self.selected[i] != -1:
-                total.append(self.options[i][self.selected[i]])
+        if not _pre:
+            for i in range(len(self.selected)):
+                if self.selected[i] != -1:
+                    total.append(self.options[i][self.selected[i]])
 
         return total
     
@@ -125,7 +166,7 @@ class ScheduleViewer(discord.ui.View):
             self.index = self.total_permutations - 1
 
     def get_embed(self):
-        emb = embed_gen(title=f"Your {self.term.capitalize()} schedule ({self.index}/{self.total_permutations})")
+        emb = embed_gen(title=f"Your {self.term.capitalize()} schedule", color = 10181046)
 
         file = discord.File(f"current.png", filename="image.png")
 
