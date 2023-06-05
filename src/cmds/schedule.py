@@ -71,8 +71,17 @@ def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Cl
 
         view = discord.ui.View()
 
+        if len(sls) > 5:
+            views = []
+            for x in [sls[i:i+5] for i in range(0, len(sls), 5)]:
+                view = discord.ui.View()
+                [view.add_item(y) for y in x]
+                views.append(view)
+
+                await intr01.followup.send("Please select each component to generate your schedule.", views=views)
+
         for a, s in sls:
             s.callback = get_callbacker(s, a, sv)
             view.add_item(s)
 
-        await intr01.followup.send("Please select each component to generate your schedule.", view=view)
+            await intr01.followup.send("Please select each component to generate your schedule.", view=view)
