@@ -78,10 +78,10 @@ def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Cl
                 [view.add_item(y[1]) for y in x]
                 views.append(view)
 
-                await intr01.followup.send("Please select each component to generate your schedule.", views=views)
-
-        for a, s in sls:
-            s.callback = get_callbacker(s, a, sv)
-            view.add_item(s)
+            await intr01.followup.send("Please select each component to generate your schedule.", views=views)
+        else:
+            for a, s in sls:
+                s.callback = get_callbacker(s, a, sv)
+                view.add_item(s)
 
             await intr01.followup.send("Please select each component to generate your schedule.", view=view)
