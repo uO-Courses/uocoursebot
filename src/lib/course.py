@@ -1,3 +1,4 @@
+import enum
 from lib.utils import check_if_exists, parse_command
 
 class Courses:
@@ -103,6 +104,13 @@ class Section:
     def __init__(self, ans):
         self.components = {k: Component(v) for k, v in ans["components"].items()}
 
+class CComponentType(str, enum.Enum):
+    Lec = "Lecture"
+    Lab = "Lab"
+    Dgd = "DGD"
+    Tut = "TUT"
+    
+
 class Component:
 
     def __init__(self, ans):
@@ -110,4 +118,23 @@ class Component:
         self.status = ans["status"]
         self.start_time_12hr = ans["start_time_12hr"]
         self.end_time_12hr = ans["end_time_12hr"]
+        start_time = ans["start_time"]
+        end_time = ans["end_time"]
+        if ans["type"] == "LEC":
+            self.type = CComponentType.Lec
+        elif ans["type"] == "DGD":
+            self.type = CComponentType.Dgd
+        elif ans["type"] == "LAB":
+            self.type = CComponentType.Lab
+        elif ans["type"] == "TUT":
+            self.type = CComponentType.Tut
+        else:
+            self.type = CComponentType.Lec
+
+        self.start_hour = int(start_time.split(":")[0])
+        self.start_minute = int(start_time.split(":")[0])
+
+        self.end_hour = int(end_time.split(":")[0])
+        self.end_minute = int(end_time.split(":")[0])
+        
         self.day = ans["day"]

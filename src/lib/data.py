@@ -28,11 +28,12 @@ class SharedData:
         with open("preferences.json", 'w') as f:
             f.write(json.dumps(self.pref, indent=4))
 
-    def get_courses(self, userid):
+    def get_courses(self, userid, term:str=None):
         d = []
         for k, v in self.utc.items():
             if userid in v:
-                d.append(k)
+                if term == None or term.upper() in k:
+                    d.append(k)
 
         return d
 
