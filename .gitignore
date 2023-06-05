@@ -2,3 +2,4 @@ venv/*
 .ssh/*
 **/__pycache__/*
 utc.json
+*.png
