@@ -59,7 +59,7 @@ def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Cl
 
         await intr01.response.defer(thinking=True, ephemeral=True)
 
-        sv = ScheduleViewer.from_user_id(s_d, 331431342438875137, term=term)
+        sv = ScheduleViewer.from_user_id(s_d, intr01.user.id, term=term)
 
         sls = [
             (j, Select(
@@ -78,7 +78,8 @@ def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Cl
                 [view.add_item(y[1]) for y in x]
                 views.append(view)
 
-            await intr01.followup.send("Please select each component to generate your schedule.", views=views)
+            for view in views:
+                await intr01.followup.send("Please select each component to generate your schedule.", view=view)
         else:
             for a, s in sls:
                 s.callback = get_callbacker(s, a, sv)
