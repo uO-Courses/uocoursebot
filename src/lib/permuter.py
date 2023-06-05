@@ -63,7 +63,7 @@ class ScheduleViewer(discord.ui.View):
         selected = []
 
         for _ in range(len(options)):
-            selected.append(-1)
+            selected.append(0)
 
         self.index = 0
 
@@ -103,7 +103,7 @@ class ScheduleViewer(discord.ui.View):
             toadd = 0
             if self.selected[i] == len(self.options[i]):
                 self.selected[i] = -1
-                self.toadd = 1
+                toadd = 1
 
         self.index = (self.index + 1) % self.total_permutations
 
@@ -118,7 +118,7 @@ class ScheduleViewer(discord.ui.View):
             toadd = 0
             if self.selected[i] == -2:
                 self.selected[i] = len(self.options[i])-1
-                self.toadd = -1
+                toadd = -1
 
         self.index -= 1
         if self.index < 0:

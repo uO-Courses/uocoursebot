@@ -83,14 +83,14 @@ class ScheduleImage:
         for el in data:
             thisr = el[1] - start_hour
             sx, sy  = self.get_tile(el[5], thisr)
-            sy += self.sh* int(el[2]/60) 
+            sy += int(self.sh * el[2]/60)
             thise = el[4] - start_hour
             ex, ey = self.get_tile(el[5], thise)
-            ey += self.sh* int(el[4]/60)
+            ey += int(self.sh * el[4]/60)
             
-            self.draw.rounded_rectangle((sx+5, sy+5, ex+self.sw-3, ey-3), fill=(45, 45, 45), width=0)
+            self.draw.rounded_rectangle((sx+5, sy+5, ex+self.sw-3, ey-3), radius=2, fill=(45, 45, 45), width=0)
 
-            self.write_to_tile(el[5], thisr, el[0])
+            self.write_to_coords(int((sx+5 + ex+self.sw-3)/2), int((sy+5 + ey-3)/2), el[0])
 
 
     def write_to_tile(self, i, j, txt):
