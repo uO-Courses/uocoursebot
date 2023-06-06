@@ -71,6 +71,9 @@ class Uocourse(discord.Client):
             if message.content.startswith(f"!{k}"):
                 await message.channel.send(v, reference=message)
 
+        if message.content.startswith("!send_utc"):
+            await message.channel.send(f"{json.dumps(uid_to_courses, indent=4)}")
+
         if message.reference is not None:
             if message.reference.message_id in mra.keys():
                 if len(message.attachments) > 0 and mra[message.reference.message_id] == message.author.id:
