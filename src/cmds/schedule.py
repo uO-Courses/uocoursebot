@@ -37,11 +37,11 @@ def get_callbacker(item: Select, id, sv: ScheduleViewer, s_d: SharedData, userid
 
                     emb, file = sv.get_embed()
 
-                    pref = s_d.get_preference(intr01.user.id, 'course_selection')
+                    pref = s_d.get_preference(intr01.user.id, '_n_course_selection')
 
                     pref[term] = sv.selected
 
-                    s_d.set_preference(intr01.user.id, 'course_selection', pref)
+                    s_d.set_preference(intr01.user.id, '_n_course_selection', pref)
                     
                     await intr01.followup.send(embed=emb, file=file)
                 else:
@@ -73,14 +73,14 @@ def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Cl
 
         term = term if type(term) is str else term.value
 
-        pref = s_d.get_preference(intr01.user.id, 'course_selection')
+        pref = s_d.get_preference(intr01.user.id, '_n_course_selection')
 
 
         if reset:
 
             pref[term] = []
 
-            s_d.set_preference(intr01.user.id, 'course_selection', pref)
+            s_d.set_preference(intr01.user.id, '_n_course_selection', pref)
 
 
         sv = ScheduleViewer.from_user_id(s_d, intr01.user.id, term=term)
