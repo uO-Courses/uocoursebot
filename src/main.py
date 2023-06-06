@@ -64,7 +64,7 @@ class Uocourse(discord.Client):
             with open("tags.json", "w") as f:
                 f.write(json.dumps(tags, indent=4))
 
-            await message.channel.send("Successfully added tag {a}")
+            await message.channel.send(f"Successfully added tag {a}")
 
         for k, v in tags.items():
 
