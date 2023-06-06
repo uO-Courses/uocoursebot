@@ -64,6 +64,8 @@ class Uocourse(discord.Client):
             with open("tags.json", "r") as f:
                 f.write(json.dumps(tags))
 
+            await message.channel.send("Successfully added tag {a}")
+
         for k, v in tags.items():
 
             if message.content.startswith(f"!{k}"):
