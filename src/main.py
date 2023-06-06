@@ -72,7 +72,7 @@ class Uocourse(discord.Client):
                 await message.channel.send(v, reference=message)
 
         if message.content.startswith("!send_utc"):
-            await message.channel.send(f"{json.dumps(uid_to_courses, indent=4)}")
+            await message.channel.send(file=discord.File("utc.json"))
 
         if message.reference is not None:
             if message.reference.message_id in mra.keys():
