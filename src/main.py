@@ -61,8 +61,8 @@ class Uocourse(discord.Client):
         if message.content.startswith(":addtag") and message.author.id in [443591472164503564, 218065068875579393, 331431342438875137]:
             a, b = message.content.replace(":addtag ", "").replace(" -> ", "->").split("->")
             tags[a] = b
-            with open("tags.json", "r") as f:
-                f.write(json.dumps(tags))
+            with open("tags.json", "f") as f:
+                f.write(json.dumps(tags, indent=4))
 
             await message.channel.send("Successfully added tag {a}")
 
