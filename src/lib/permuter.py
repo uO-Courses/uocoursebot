@@ -127,7 +127,7 @@ class ScheduleViewer(discord.ui.View):
         si = ScheduleImage()
         si.schedule(self.generate_from_selected())
         
-        si.save(f"./current.png")
+        si.save(f"current.png")
 
         self.last_save = CURRENT_NUM
 

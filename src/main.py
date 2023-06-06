@@ -52,8 +52,13 @@ class Uocourse(discord.Client):
         l = await tree.sync()
 
         print('Logged in as', self.user)
+        
 
     async def on_message(self, message: discord.Message):
+
+        if message.content.startswith("!hub"):
+            await message.channel.send("https://discord.gg/GvKB3256nh", reference=message)
+
         if message.reference is not None:
             if message.reference.message_id in mra.keys():
                 if len(message.attachments) > 0 and mra[message.reference.message_id] == message.author.id:
