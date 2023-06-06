@@ -4,10 +4,11 @@ from discord.ui import Select
 
 from lib.utils import dayd, sttt
 from lib.permuter import ScheduleViewer
+from lib.data import SharedData
 
 CURRENT_NUM = 0
 
-def get_callbacker(item: Select, id, sv: ScheduleViewer):
+def get_callbacker(item: Select, id, sv: ScheduleViewer, s_d: SharedData):
 
     async def callback(intr01: discord.Interaction):
 
@@ -33,6 +34,8 @@ def get_callbacker(item: Select, id, sv: ScheduleViewer):
                 sv.generate()
 
                 emb, file = sv.get_embed()
+
+                s_d.set_preference(intr01.user.id, 'course_selection', sv.selected)
                 
                 await intr01.followup.send(embed=emb, file=file)
             else:
@@ -47,42 +50,65 @@ def get_callbacker(item: Select, id, sv: ScheduleViewer):
     return callback
 
 
-def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Client, s_d, gu):
+def register_schedule(tree: discord.app_commands.CommandTree, client: discord.Client, s_d: SharedData, gu):
     
     @tree.command(name="schedule", description="View your schedule")
     @discord.app_commands.choices(term=[
         discord.app_commands.Choice(name='Fall', value='Fall'),
         discord.app_commands.Choice(name='Winter', value='Winter')
     ])
-    async def slash_02(intr01: discord.Interaction, term: discord.app_commands.Choice[str]="Fall"):
+    @discord.app_commands.describe(
+        reset="Whether to reselect the course components",
+        term="Which term's schedule to view"
+    )
+    async def slash_02(intr01: discord.Interaction, reset: bool=False, term: discord.app_commands.Choice[str]="Fall"):
         term = term if type(term) is str else term.value
 
-        await intr01.response.defer(thinking=True, ephemeral=True)
+        if reset:
+            s_d.set_preference(intr01.user.id, 'course_selection', [])
+
 
         sv = ScheduleViewer.from_user_id(s_d, intr01.user.id, term=term)
 
-        sls = [
-            (j, Select(
-                placeholder=f"Choose your {x[0][6]} for {x[0][7]}",
-                options=[discord.SelectOption(label=f"{y[0]} ({y[8].rday} {y[8].start_time_12hr} - {y[8].end_time_12hr})", value=i) for i, y in enumerate(x)] + [discord.SelectOption(label="None", value = -1)]
-            ))
-            for j, x in enumerate(sv.options)
-        ]
+        if len(x := s_d.get_preference(intr01.user.id, 'course_selection')) == len(sv.selected):
 
-        view = discord.ui.View()
+            await intr01.response.defer(thinking=True, ephemeral=False)
 
-        if len(sls) > 5:
-            views = []
-            for x in [sls[i:i+5] for i in range(0, len(sls), 5)]:
-                view = discord.ui.View()
-                [view.add_item(y[1]) for y in x]
-                views.append(view)
+            sv.selected = x
 
-            for view in views:
-                await intr01.followup.send("Please select each component to generate your schedule.", view=view)
+            sv.generate()
+
+            emb, file = sv.get_embed()
+            
+            await intr01.followup.send(embed=emb, file=file)
+
+
         else:
-            for a, s in sls:
-                s.callback = get_callbacker(s, a, sv)
-                view.add_item(s)
 
-            await intr01.followup.send("Please select each component to generate your schedule.", view=view)
+            await intr01.response.defer(thinking=True, ephemeral=True)
+
+            sls = [
+                (j, Select(
+                    placeholder=f"Choose your {x[0][6]} for {x[0][7]}",
+                    options=[discord.SelectOption(label=f"{y[0]} ({y[8].rday} {y[8].start_time_12hr} - {y[8].end_time_12hr})", value=i) for i, y in enumerate(x)] + [discord.SelectOption(label="None", value = -1)]
+                ))
+                for j, x in enumerate(sv.options)
+            ]
+
+            view = discord.ui.View()
+
+            if len(sls) > 5:
+                views = []
+                for x in [sls[i:i+5] for i in range(0, len(sls), 5)]:
+                    view = discord.ui.View()
+                    [view.add_item(y[1]) for y in x]
+                    views.append(view)
+
+                for view in views:
+                    await intr01.followup.send("Please select each component to generate your schedule.", view=view)
+            else:
+                for a, s in sls:
+                    s.callback = get_callbacker(s, a, sv, s_d)
+                    view.add_item(s)
+
+                await intr01.followup.send("Please select each component to generate your schedule.", view=view)

@@ -34,6 +34,7 @@ def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
                     await intr.response.send_message(f"Succesfully added {tname.upper()}. You are the only person who has currently selected this section.", ephemeral=True)
                 s_d.update_utc(uid_to_courses)
                 s_d.set_preference(userid, 'has_added_courses', True)
+                s_d.set_preference(userid, 'course_selection', [])
         return just_some_callback
 
     @tree.command(name="add", description="Add a course")
