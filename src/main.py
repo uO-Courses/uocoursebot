@@ -43,6 +43,8 @@ s_d = SharedData(uid_to_courses, preferences)
 
 mra = {}
     
+with open("tags.json", "r") as f:
+    tags = json.loads(f.read())
 
 class Uocourse(discord.Client):
     async def on_ready(self):
@@ -56,8 +58,16 @@ class Uocourse(discord.Client):
 
     async def on_message(self, message: discord.Message):
 
-        if message.content.startswith("!hub"):
-            await message.channel.send("https://discord.gg/GvKB3256nh", reference=message)
+        if message.content.startswith(":addtag") and message.author.id in [443591472164503564, 218065068875579393, 331431342438875137]:
+            a, b = message.content.replace(":addtag ", "").replace(" -> ", "->").split("->")
+            tags[a] = b
+            with open("tags.json", "r") as f:
+                f.write(json.dumps(tags))
+
+        for k, v in tags.items():
+
+            if message.content.startswith(f"!{k}"):
+                await message.channel.send(v, reference=message)
 
         if message.reference is not None:
             if message.reference.message_id in mra.keys():
@@ -68,7 +78,6 @@ class Uocourse(discord.Client):
                         await message.channel.send("Your message does not contain a file.", reference=message)
                     else:
                         await message.channel.send("Please use /import to import your own schedule.", reference=message)
-
 
 
 async def tt(msg_or_int, attchs: list[discord.Attachment], userid):
