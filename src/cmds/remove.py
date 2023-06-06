@@ -13,6 +13,7 @@ def callback_maker(sel, uid_to_courses, userid, s_d):
             if userid in v:
                 v.remove(userid)
             s_d.update_utc(uid_to_courses)
+            s_d.set_preference(userid, 'course_selection', [])
 
             await intr01.followup.send(f"Sucessfully deleted {val}.")
 

@@ -125,6 +125,7 @@ async def tt(msg_or_int, attchs: list[discord.Attachment], userid):
             await msg_or_int.channel.send("\n\n".join(ttx))
             s_d.update_utc(uid_to_courses)
             s_d.set_preference(userid, 'has_added_courses', True)
+            s_d.set_preference(userid, 'course_selection', [])
             
 
 
