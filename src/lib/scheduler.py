@@ -11,7 +11,7 @@ class ScheduleImage:
 
         draw = ImageDraw.Draw(img)
 
-        hsize = 14
+        hsize = 15
 
         self.hsize = hsize
 
@@ -25,6 +25,8 @@ class ScheduleImage:
         self.sh = sh
 
         self.draw = draw
+
+        self.box_radius = 8
 
         self.generate_lines()
 
@@ -70,10 +72,8 @@ class ScheduleImage:
         # data should be [(name, start_hour(24h), start_minute, end_hour(24h), end_minute, daydat)]
         end_hour = sorted(data, key=lambda x: x[3], reverse=True)[0][3] + 1
         start_hour = sorted(data, key=lambda x: x[1], reverse=False)[0][1]
-        if end_hour - start_hour < self.hsize-1:
-            ss = 1
-        else:
-            ss = 2
+
+        ss = 1
 
         self.draw_time(start_hour, ss)
 
@@ -87,8 +87,10 @@ class ScheduleImage:
             thise = el[3] - start_hour
             ex, ey = self.get_tile(el[5], thise+1)
             ey += int(self.sh * el[4]/60)
-            
-            self.draw.rounded_rectangle((sx+5, sy+5, ex+self.sw-3, ey-3), radius=2, fill=(45, 45, 45), width=0)
+
+
+            self.draw.rounded_rectangle((sx+3, sy+3, ex+self.sw-1, ey-1), radius=self.box_radius, fill=(219, 112, 147), width=0)
+            self.draw.rounded_rectangle((sx+5, sy+5, ex+self.sw-3, ey-3), radius=self.box_radius, fill=(45, 45, 45), width=0)
 
             self.write_to_coords(int((sx+5 + ex+self.sw-3)/2), int((sy+5 + ey-3)/2), el[0])
 

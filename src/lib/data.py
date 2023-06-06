@@ -7,7 +7,7 @@ class SharedData:
         self.defaults = {
             'has_added_courses': False,
             'year': 1,
-            'course_selection': []
+            '_n_course_selection': {'Fall': [], 'Winter': []}
         }
 
     def update_utc(self, uid_to_courses):
@@ -15,6 +15,8 @@ class SharedData:
             f.write(json.dumps(uid_to_courses, indent=4))
 
     def get_preference(self, userid, preference_name):
+        if preference_name == 'course_selection':
+            preference_name = "_n_course_selection"
         userid = str(userid)
         if userid in self.pref.keys():
             if preference_name in self.pref[userid]:
@@ -22,6 +24,8 @@ class SharedData:
         return self.defaults[preference_name]
 
     def set_preference(self, userid, preference_name, value):
+        if preference_name == 'course_selection':
+            preference_name = "_n_course_selection"
         userid = str(userid)
         if userid in self.pref.keys():
             self.pref[userid][preference_name] = value
