@@ -46,6 +46,9 @@ mra = {}
 with open("tags.json", "r") as f:
     tags = json.loads(f.read())
 
+GREETING_CHANNEL = 1095372143010775046
+VERIFIED_ROLE = 1095372141966393370
+
 class Uocourse(discord.Client):
     async def on_ready(self):
 
@@ -74,6 +77,16 @@ class Uocourse(discord.Client):
         if message.content.startswith("!send_utc"):
             await message.channel.send(file=discord.File("utc.json"))
 
+        if message.content.startswith("!verify") and message.author.guild_permissions.manage_roles and message.reference is not None:
+            message_ref = await message.channel.fetch_message(message.reference.message_id)
+            user_to_add = await message.guild.fetch_member(message_ref.author.id)
+            role = discord.utils.get(await message.guild.fetch_roles(), id=VERIFIED_ROLE)
+            await user_to_add.add_roles(role)
+            tsc = await message.guild.fetch_channel(GREETING_CHANNEL)
+            await tsc.send(f"Welcome <@{user_to_add.id}>!")
+            await message_ref.add_reaction("✅")
+
+
         if message.reference is not None:
             if message.reference.message_id in mra.keys():
                 if len(message.attachments) > 0 and mra[message.reference.message_id] == message.author.id:
@@ -83,6 +96,7 @@ class Uocourse(discord.Client):
                         await message.channel.send("Your message does not contain a file.", reference=message)
                     else:
                         await message.channel.send("Please use /import to import your own schedule.", reference=message)
+
 
 
 async def tt(msg_or_int, attchs: list[discord.Attachment], userid):
