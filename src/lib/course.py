@@ -84,6 +84,11 @@ class Courses:
 class Course:
     
     def __init__(self, ans):
+        if ans == None:
+            self.name = "NOT FOUND"
+            self.subject = "NOT FOUND"
+            self.code = "NOT FOUND"
+            self.sections = {}
         self.name = ans["course_name"]
         self.subject = ans["subject_code"]
         self.code = ans["course_code"]
