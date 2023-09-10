@@ -73,4 +73,4 @@ def register_add(tree: discord.app_commands.CommandTree, client, s_d, gu):
 
             await intr01.followup.send(view=view, ephemeral=True)
         else:
-            intr01.followup.send(spmsg)
+            await intr01.followup.send(spmsg)
