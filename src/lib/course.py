@@ -89,10 +89,11 @@ class Course:
             self.subject = "NOT FOUND"
             self.code = "NOT FOUND"
             self.sections = {}
-        self.name = ans["course_name"]
-        self.subject = ans["subject_code"]
-        self.code = ans["course_code"]
-        self.sections = {k: Section(v) for k, v in ans["sections"].items()}
+        else:
+            self.name = ans["course_name"]
+            self.subject = ans["subject_code"]
+            self.code = ans["course_code"]
+            self.sections = {k: Section(v) for k, v in ans["sections"].items()}
 
     def components(self):
         return [c for s in self.section.values() for c in s.components.values()]
